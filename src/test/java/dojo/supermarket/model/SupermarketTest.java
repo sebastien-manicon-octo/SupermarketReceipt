@@ -1,10 +1,15 @@
 package dojo.supermarket.model;
 
 import dojo.supermarket.ReceiptPrinter;
+import dojo.supermarket.model.offertypes.FiveForAmountOffer;
+import dojo.supermarket.model.offertypes.TenPercentDiscountOffer;
+import dojo.supermarket.model.offertypes.ThreeForTwoOffer;
+import dojo.supermarket.model.offertypes.TwoForAmountOffer;
 import org.approvaltests.Approvals;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.function.BiFunction;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -21,7 +26,7 @@ class SupermarketTest {
         catalog.addProduct(apples, 1.99);
 
         Teller teller = new Teller(catalog);
-        teller.addSpecialOffer(SpecialOfferType.TEN_PERCENT_DISCOUNT, toothbrush, 10.0);
+        teller.addSpecialOffer(new TenPercentDiscountOffer(toothbrush, 10.0));
 
         ShoppingCart cart = new ShoppingCart();
         cart.addItemQuantity(apples, 2.5);
@@ -50,12 +55,19 @@ class SupermarketTest {
             new Product("kiwi", ProductUnit.KILO)
     );
 
+    private final List<BiFunction<Product, Double, Offer>> OFFERS = Arrays.asList(
+            (p, a) -> new ThreeForTwoOffer(p),
+            TenPercentDiscountOffer::new,
+            TwoForAmountOffer::new,
+            FiveForAmountOffer::new
+    );
+
     @Test
     public void golden_master() {
         Random random = new Random(42);
 
         StringBuilder sb = new StringBuilder();
-        for(int x = 0; x < 100; x++) {
+        for (int x = 0; x < 100; x++) {
             SupermarketCatalog catalog = new FakeCatalog();
             Set<Product> existingProducts = new HashSet<>();
             for (int i = 0; i < random.nextInt(10) + 1; i++) {
@@ -69,17 +81,16 @@ class SupermarketTest {
 
             Teller teller = new Teller(catalog);
             for (int i = 0; i < random.nextInt(10) + 1; i++) {
-                SpecialOfferType[] values = SpecialOfferType.values();
+                //SpecialOfferType[] values = SpecialOfferType.values();
                 Product product = PRODUCTS.get(random.nextInt(PRODUCTS.size()));
 
                 if (!existingProducts.contains(product)) {
                     continue;
                 }
 
+                Offer offer = OFFERS.get(random.nextInt(OFFERS.size())).apply(product, random.nextDouble() % 5);
                 teller.addSpecialOffer(
-                        values[random.nextInt(values.length)],
-                        product,
-                        random.nextDouble() % 5
+                        offer
                 );
             }
 

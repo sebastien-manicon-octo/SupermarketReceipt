@@ -13,8 +13,8 @@ public class Teller {
         this.catalog = catalog;
     }
 
-    public void addSpecialOffer(SpecialOfferType offerType, Product product, double argument) {
-        offers.put(product, offerType.createOffer(product, argument));
+    public void addSpecialOffer(Offer offer) {
+        offers.put(offer.getProduct(), offer);
     }
 
     public Receipt checksOutArticlesFrom(ShoppingCart theCart) {

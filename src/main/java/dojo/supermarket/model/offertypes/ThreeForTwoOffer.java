@@ -7,8 +7,8 @@ import dojo.supermarket.model.Product;
 import java.util.Optional;
 
 public class ThreeForTwoOffer extends Offer {
-    public ThreeForTwoOffer(Product product, double argument) {
-        super(product, argument);
+    public ThreeForTwoOffer(Product product) {
+        super(product);
     }
 
     @Override

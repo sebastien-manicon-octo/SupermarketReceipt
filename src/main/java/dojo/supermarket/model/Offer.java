@@ -5,10 +5,8 @@ import java.util.Optional;
 public abstract class Offer {
 
     protected final Product product;
-    protected double argument;
 
-    public Offer(Product product, double argument) {
-        this.argument = argument;
+    public Offer(Product product) {
         this.product = product;
     }
 
