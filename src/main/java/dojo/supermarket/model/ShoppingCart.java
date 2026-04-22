@@ -1,11 +1,11 @@
 package dojo.supermarket.model;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class ShoppingCart {
 
     private final List<ProductQuantity> items = new ArrayList<>();
-    private final Map<Product, Double> productQuantities = new HashMap<>();
 
     List<ProductQuantity> getItems() {
         return Collections.unmodifiableList(items);
@@ -16,19 +16,21 @@ public class ShoppingCart {
     }
 
     Map<Product, Double> productQuantities() {
-        return Collections.unmodifiableMap(productQuantities);
+        return items.stream().collect(
+                Collectors.groupingBy(
+                        ProductQuantity::getProduct,
+                        Collectors.summingDouble(ProductQuantity::getQuantity)
+                )
+        );
     }
 
     public void addItemQuantity(Product product, double quantity) {
         items.add(new ProductQuantity(product, quantity));
-        if (productQuantities.containsKey(product)) {
-            productQuantities.put(product, productQuantities.get(product) + quantity);
-        } else {
-            productQuantities.put(product, quantity);
-        }
     }
 
     void handleOffers(Receipt receipt, Map<Product, Offer> offers, SupermarketCatalog catalog) {
+        Map<Product, Double> productQuantities = productQuantities();
+
         for (Product p : productQuantities().keySet()) {
             if (!offers.containsKey(p)) {
                 continue;
