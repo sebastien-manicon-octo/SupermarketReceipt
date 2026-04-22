@@ -16,7 +16,8 @@ public class TenPercentDiscountOffer extends Offer {
 
     @Override
     public Optional<Discount> getDiscount(double unitPrice, double quantity) {
-        Product p = getProduct();
-        return Optional.of(new Discount(p, argument + "% off", -quantity * unitPrice * argument / 100.0));
+        double priceWithoutDiscount = quantity * unitPrice;
+        double discountTotal = priceWithoutDiscount * argument / 100.0;
+        return Optional.of(new Discount(product, argument + "% off", -discountTotal));
     }
 }

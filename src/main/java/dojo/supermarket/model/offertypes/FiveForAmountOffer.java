@@ -16,15 +16,19 @@ public class FiveForAmountOffer extends Offer {
 
     @Override
     public Optional<Discount> getDiscount(double unitPrice, double quantity) {
-        Product p = getProduct();
-        int x = 5;
         int quantityAsInt = (int) quantity;
+
         if (quantityAsInt < 5) {
             return Optional.empty();
         }
 
-        int numberOfXs = quantityAsInt / x;
-        double discountTotal = unitPrice * quantity - (argument * numberOfXs + quantityAsInt % 5 * unitPrice);
-        return Optional.of(new Discount(p, x + " for " + argument, -discountTotal));
+        int numberOfXs = quantityAsInt / 5;
+
+        double priceWithoutDiscount = unitPrice * quantity;
+        double priceItemDiscounted = argument * numberOfXs;
+        double priceItemStaying = quantityAsInt % 5 * unitPrice;
+
+        double discountTotal = priceWithoutDiscount - (priceItemDiscounted + priceItemStaying);
+        return Optional.of(new Discount(product, "5 for " + argument, -discountTotal));
     }
 }
